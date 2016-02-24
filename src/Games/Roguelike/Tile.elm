@@ -7,7 +7,7 @@ module Games.Roguelike.Tile
 
 import Dict exposing (Dict)
 import Html exposing (Html, div, img)
-import Html.Attribute exposing (style, alt)
+import Html.Attributes exposing (style, alt)
 import Maybe exposing (Maybe)
 
 {-| A rectangle described by its top left corner and its width and height.
@@ -47,7 +47,7 @@ tilesheet sheet w h x y a =
 {-| View a tile.
 -}
 view : Tile -> Html
-view t = croppedImage t.rect t.sheet t.alt
+view t = croppedImage t.rect t.sheet (Maybe.withDefault "" t.alt)
 
 croppedImage : Rect Int -> String -> String -> Html
 croppedImage r url a =
@@ -66,5 +66,5 @@ cropDivStyle w h =
 cropImgStyle : Int -> Int -> Html.Attribute
 cropImgStyle x y =
   style [ ("padding", "0px")
-        , ("margin", toString (-y) ++ "px 0px 0px " toString (-x) ++ "px")
+        , ("margin", toString (-y) ++ "px 0px 0px " ++ toString (-x) ++ "px")
         ]

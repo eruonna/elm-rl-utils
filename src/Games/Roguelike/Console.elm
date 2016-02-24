@@ -6,11 +6,13 @@ module Games.Roguelike.Console
   , fromMap ) where
 
 import Dict exposing (Dict)
-import Html exposing (Html)
+import Html exposing (Html, table, tbody, tr, td)
+import Html.Attributes exposing (style)
 import List
 import Maybe
 
-import Games.Roguelike.Tile exposing (Tile, Rect) as Tile
+import Games.Roguelike.Tile as Tile
+import Games.Roguelike.Tile exposing (Tile, Rect)
 
 {-| Represents a location on the console. This is a pair rather than a record
 because we use it as keys in a `Dict`.
@@ -29,7 +31,7 @@ type alias Console =
 {-| Create a new (empty) console.
 -}
 new : Rect Int -> Console
-new rect = { d = Dict.empty, r = rect }
+new rect = { dict = Dict.empty, rect = rect }
 
 {-| Convert a `Console` to `Html`. Currently we use a `table` since it is,
 arguably, tabular data.
@@ -41,13 +43,22 @@ view console =
         (List.map (\ r ->
           tr []
             (List.map (\ l -> td [] <| Maybe.withDefault []
-                                         Maybe.map (\ t -> [ Tile.view t ])
-                                           <| Dict.get l console.dict)
-                      <| rectLocs console.rect))) ]
+                                    <| Maybe.map (\ t -> [ Tile.view t ])
+                                    <| Dict.get l console.dict)
+                      r))
+               <| rectLocs console.rect) ]
 
-rectLocs : Rect Int -> List.List (Int, Int)
+rectLocs : Rect Int -> List (List (Int, Int))
 rectLocs { x, y, w, h } =
-  List.map (\ a -> List.map (\ b -> (a, b)) [y..y+h-1]) [x..x+w-1]
+  List.map (\ b -> List.map (\ a -> (a, b)) [x..x+w-1]) [y..y+h-1]
+
+tableStyle : Html.Attribute
+tableStyle =
+  style [ ("padding", "0px")
+        , ("margin", "0px")
+        , ("border", "0px")
+        , ("border-spacing", "0px")
+        ]
 
 {-| Draw a tile into a console. Does no bounds checking; tiles added
 out-of-bounds will consume space but will not be shown with `view`.
@@ -61,5 +72,8 @@ The `tileGetter` argument is a function that converts a map entry into a tile.
 This ought to be more efficient than iterating over the map and `draw`ing each
 tile individually.
 -}
-fromMap : Dict Location a -> (a -> Tile) -> Console
-fromMap map tileGetter = Dict.map t m
+fromMap : Rect Int -> Dict Location a -> (a -> Tile) -> Console
+fromMap rect map tileGetter =
+  { dict = Dict.map (\ _ -> tileGetter) map
+  , rect = rect
+  }
