@@ -39,10 +39,11 @@ arguably, tabular data.
 view : Console -> Html
 view console =
   table [ tableStyle ]
-    [ tbody []
+    [ tbody [ tableStyle ]
         (List.map (\ r ->
-          tr []
-            (List.map (\ l -> td [] <| Maybe.withDefault []
+          tr [ tableStyle ]
+            (List.map (\ l -> td [ tableStyle ]
+                                    <| Maybe.withDefault []
                                     <| Maybe.map (\ t -> [ Tile.view t ])
                                     <| Dict.get l console.dict)
                       r))
