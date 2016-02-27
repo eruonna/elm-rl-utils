@@ -1,9 +1,27 @@
 module Games.Roguelike.Console
   ( Location
   , Console
+  , new
   , view
   , draw
   , fromMap ) where
+
+{-| This module provides utilities for manipulating and viewing grids of
+tiles.
+
+# Types
+@docs Location, Console
+
+# Create
+@docs new, fromMap
+
+# Update
+@docs draw
+
+# View
+@docs view
+
+-}
 
 import Dict exposing (Dict)
 import Html exposing (Html, table, tbody, tr, td)

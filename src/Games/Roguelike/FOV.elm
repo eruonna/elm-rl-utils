@@ -1,6 +1,12 @@
 module Games.Roguelike.FOV
   (fov) where
 
+{-| Utility for computing FOV.
+
+@docs fov
+
+-}
+
 import Dict exposing (Dict)
 import List
 import Maybe
@@ -102,6 +108,10 @@ originates; and `range : Int` is the maximum range of vision. The return type
 is `Dict (Int, Int) Bool` which represents which squares are visible. Every
 visible square is present in the `Dict` and has the value `True`. Invisible
 squares may have value `False` or may be absent from the `Dict`.
+
+As of this writing, the algortithm used is shadow casting. A square is
+considered visible if any part of it is visible from the center of the origin
+square.
 -}
 fov : Dict (Int, Int) Bool -> (Int, Int) -> Int -> Dict (Int, Int) Bool
 fov map (x, y) range =

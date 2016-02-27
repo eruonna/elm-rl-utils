@@ -5,6 +5,19 @@ module Games.Roguelike.Tile
   , tilesheet
   , view ) where
 
+{-| Representation of square tiles from a tilesheet.
+
+# Types
+@docs Rect, Tile
+
+# Create
+@docs mkTile, tilesheet
+
+# View
+@docs view
+
+-}
+
 import Dict exposing (Dict)
 import Html exposing (Html, div, img)
 import Html.Attributes exposing (style, alt, src)
