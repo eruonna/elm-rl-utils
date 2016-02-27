@@ -92,6 +92,17 @@ halfPlane i = quadrant i >> quadrant (trans flipY i)
 plane : FOVAlg a
 plane i = halfPlane i >> halfPlane (trans flipX i)
 
+{-| Compute field of view information.
+
+    fov visible origin range
+
+Here `visible : Dict (Int, Int) Bool` represents which squares can be seen
+through; `origin : (Int, Int)` is the point from which the field of view
+originates; and `range : Int` is the maximum range of vision. The return type
+is `Dict (Int, Int) Bool` which represents which squares are visible. Every
+visible square is present in the `Dict` and has the value `True`. Invisible
+squares may have value `False` or may be absent from the `Dict`.
+-}
 fov : Dict (Int, Int) Bool -> (Int, Int) -> Int -> Dict (Int, Int) Bool
 fov map (x, y) range =
   plane  { passesLight = \ (x', y') -> Maybe.withDefault False
