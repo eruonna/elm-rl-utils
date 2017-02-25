@@ -1,6 +1,5 @@
 module Games.Roguelike.Console exposing
-  ( Location
-  , Console
+  ( Console
   , new
   , view
   , draw
@@ -11,7 +10,7 @@ module Games.Roguelike.Console exposing
 tiles.
 
 # Types
-@docs Location, Console
+@docs Console
 
 # Create
 @docs new, fromMap
@@ -32,11 +31,7 @@ import Maybe
 
 import Games.Roguelike.Tile as Tile
 import Games.Roguelike.Tile exposing (Tile, Rect)
-
-{-| Represents a location on the console. This is a pair rather than a record
-because we use it as keys in a `Dict`.
--}
-type alias Location = (Int, Int)
+import Games.Roguelike.Map as Map exposing (Map, Location)
 
 {-| Represents a console filled with tiles. The `rect` field is the rectangle
 of `Location`s that are considered part of the console, but not all of those
@@ -92,7 +87,7 @@ The `tileGetter` argument is a function that converts a map entry into a tile.
 This ought to be more efficient than iterating over the map and `draw`ing each
 tile individually.
 -}
-fromMap : Rect Int -> Dict Location a -> (a -> Tile) -> Console
+fromMap : Rect Int -> Map a -> (a -> Tile) -> Console
 fromMap rect map tileGetter =
   { dict = Dict.map (\ _ -> tileGetter) map
   , rect = rect
