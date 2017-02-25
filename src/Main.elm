@@ -11,7 +11,8 @@ import Dom
 import Html exposing (Html, Attribute)
 import Html.Attributes
 import Html.Events
-import Games.Roguelike.Console as Console exposing (Console, Location)
+import Games.Roguelike.Console as Console exposing (Console)
+import Games.Roguelike.Map as Map exposing (Map, Location)
 import Games.Roguelike.Tile as Tile exposing (Rect, Tile)
 
 consolas16x16 = Tile.tilesheet "/assets/consolas_unicode_16x16.png" 16 16
@@ -24,10 +25,9 @@ type alias MapTile = { passable : Bool, tile : Tile }
 floor = MapTile True floorTile
 wall = MapTile False wallTile
 rock = MapTile False emptyTile
-type alias Map = Dict Location MapTile
 type alias Player = Location
 
-type alias Model = { map : Map, player : Player }
+type alias Model = { map : Map MapTile, player : Player }
 
 onEdge : Rect Int -> Location -> Bool
 onEdge rect (x,y) = x == rect.x
@@ -35,18 +35,18 @@ onEdge rect (x,y) = x == rect.x
                  || x == rect.x + rect.w - 1
                  || y == rect.y + rect.h - 1
 
-placeRoom : Rect Int -> Map -> Map
+placeRoom : Rect Int -> Map MapTile -> Map MapTile
 placeRoom rect map =
-  Dict.union
+  Map.union
     (mapRect rect (\ l -> if onEdge rect l then wall else floor))
     map
 
-newMap : Rect Int -> Map
+newMap : Rect Int -> Map MapTile
 newMap rect = mapRect rect (always rock) |> placeRoom (Rect 20 10 20 20)
 
-mapRect : Rect Int -> (Location -> MapTile) -> Map
+mapRect : Rect Int -> (Location -> MapTile) -> Map MapTile
 mapRect rect tileGetter =
-  Dict.fromList <|
+  Map.fromList <|
     List.concatMap (\ x -> List.map (\ y -> ((x,y), tileGetter (x,y)))
                                     (List.range rect.y (rect.y + rect.h - 1)))
                    (List.range rect.x (rect.x + rect.w - 1))
