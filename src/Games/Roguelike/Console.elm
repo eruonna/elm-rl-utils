@@ -1,10 +1,11 @@
-module Games.Roguelike.Console
+module Games.Roguelike.Console exposing
   ( Location
   , Console
   , new
   , view
   , draw
-  , fromMap ) where
+  , fromMap
+  )
 
 {-| This module provides utilities for manipulating and viewing grids of
 tiles.
@@ -54,7 +55,7 @@ new rect = { dict = Dict.empty, rect = rect }
 {-| Convert a `Console` to `Html`. Currently we use a `table` since it is,
 arguably, tabular data.
 -}
-view : Console -> Html
+view : Console -> Html a
 view console =
   table [ tableStyle ]
     [ tbody [ tableStyle ]
@@ -69,9 +70,9 @@ view console =
 
 rectLocs : Rect Int -> List (List (Int, Int))
 rectLocs { x, y, w, h } =
-  List.map (\ b -> List.map (\ a -> (a, b)) [x..x+w-1]) [y..y+h-1]
+  List.map (\ b -> List.map (\ a -> (a, b)) (List.range x (x+w-1))) (List.range y (y+h-1))
 
-tableStyle : Html.Attribute
+tableStyle : Html.Attribute a
 tableStyle =
   style [ ("padding", "0px")
         , ("margin", "0px")

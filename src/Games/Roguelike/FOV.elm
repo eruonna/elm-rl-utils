@@ -1,5 +1,6 @@
-module Games.Roguelike.FOV
-  (fov) where
+module Games.Roguelike.FOV exposing
+  (fov
+  )
 
 {-| Utility for computing FOV.
 
@@ -10,6 +11,7 @@ module Games.Roguelike.FOV
 import Dict exposing (Dict)
 import List
 import Maybe
+import Tuple exposing (..)
 
 type alias FOVIn a =
   { passesLight : (Int, Int) -> Bool
@@ -20,20 +22,20 @@ type alias FOVAlg a = FOVIn a -> a -> a
 
 getXs : Int -> (Float, Float) -> List Int
 getXs y (minSlope, maxSlope) =
-  [  floor ((toFloat y - 0.5) * minSlope + 0.5)
-  .. ceiling ((toFloat y + 0.5) * maxSlope + 0.5) - 1 ]
+  List.range (floor ((toFloat y - 0.5) * minSlope + 0.5))
+             (ceiling ((toFloat y + 0.5) * maxSlope + 0.5) - 1)
 
 step : (Int, Bool) -> (Maybe Int, List (Int, Int)) -> (Maybe Int, List (Int, Int))
 step (x, p) (m, r) = case (m, p) of
   (Nothing, False) -> (m, r)
   (Nothing, True) -> (Just x, r)
-  (Just x', False) -> (Nothing, (x+1, x') :: r)
-  (Just x', True) -> (m, r)
+  (Just y, False) -> (Nothing, (x+1, y) :: r)
+  (Just y, True) -> (m, r)
 
 finish : Int -> (Maybe Int, List (Int, Int)) -> List (Int, Int)
 finish x (m, r) = case m of
   Nothing -> r
-  Just x' -> (x, x') :: r
+  Just y -> (x, y) :: r
 
 getBlocks : ((Int, Int) -> Bool) -> Int -> List Int -> List (Int, Int)
 getBlocks passesLight y xs = case xs of
@@ -64,15 +66,15 @@ row : ((Int, Int) -> Bool)
       -> (a, List (Float, Float))
 row passesLight setVisible y slopes map =
   let fringe = List.map (\ s -> (s, getXs y s)) slopes
-  in ( List.foldr (\ x m -> setVisible (x, y) True m) map (List.concatMap snd fringe)
+  in ( List.foldr (\ x m -> setVisible (x, y) True m) map (List.concatMap second fringe)
      , List.concatMap (\ (s, xs) -> getBlocks passesLight y xs |> updateSlopes y s) fringe)
 
 octant : FOVAlg a
 octant i map =
-  [1 .. i.range]
+  List.range 1 i.range
     |> List.foldl (\ y (m, slopes) -> row i.passesLight i.setVisible y (Debug.log "row" slopes) m)
                   (map, [(0,1)])
-    |> fst
+    |> first
     |> i.setVisible (0,0) True
 
 flipXY : (Int, Int) -> (Int, Int)
@@ -115,8 +117,8 @@ square.
 -}
 fov : Dict (Int, Int) Bool -> (Int, Int) -> Int -> Dict (Int, Int) Bool
 fov map (x, y) range =
-  plane  { passesLight = \ (x', y') -> Maybe.withDefault False
-                                        <| Dict.get (x'+x, y'+y) map
-         , setVisible = \ (x', y') v -> Dict.insert (x'+x, y'+y) v
+  plane  { passesLight = \ (x1, y1) -> Maybe.withDefault False
+                                        <| Dict.get (x1+x, y1+y) map
+         , setVisible = \ (x1, y1) v -> Dict.insert (x1+x, y1+y) v
          , range = range }
          Dict.empty

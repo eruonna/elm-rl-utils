@@ -1,9 +1,10 @@
-module Games.Roguelike.Tile
+module Games.Roguelike.Tile exposing
   ( Tile
   , Rect
   , mkTile
   , tilesheet
-  , view ) where
+  , view
+  )
 
 {-| Representation of square tiles from a tilesheet.
 
@@ -59,15 +60,15 @@ tilesheet sheet w h x y a =
 
 {-| View a tile.
 -}
-view : Tile -> Html
+view : Tile -> Html a
 view t = croppedImage t.rect t.sheet (Maybe.withDefault "" t.alt)
 
-croppedImage : Rect Int -> String -> String -> Html
+croppedImage : Rect Int -> String -> String -> Html a
 croppedImage r url a =
   div [ cropDivStyle r.w r.h ]
     [ img [ cropImgStyle r.x r.y, alt a, src url ] [] ]
 
-cropDivStyle : Int -> Int -> Html.Attribute
+cropDivStyle : Int -> Int -> Html.Attribute a
 cropDivStyle w h =
   style [ ("overflow", "hidden")
         , ("padding", "0px")
@@ -76,7 +77,7 @@ cropDivStyle w h =
         , ("height", toString h ++ "px")
         ]
 
-cropImgStyle : Int -> Int -> Html.Attribute
+cropImgStyle : Int -> Int -> Html.Attribute a
 cropImgStyle x y =
   style [ ("padding", "0px")
         , ("margin", toString (-y) ++ "px 0px 0px " ++ toString (-x) ++ "px")

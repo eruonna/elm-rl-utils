@@ -1,6 +1,8 @@
 # elm-package generated files
 elm-package.json
 elm-stuff/
+elm.js
+documentation.json
 # elm-repl generated files
 repl-temp-*
 # vim .swp
